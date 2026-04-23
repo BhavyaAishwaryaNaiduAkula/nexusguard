@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "firebase/auth";
 
 /**
  * NEXUSGUARD PRODUCTION FIREBASE CONFIGURATION
@@ -15,9 +15,6 @@ const firebaseConfig = {
   appId: "1:730829625829:web:57144f1e04025e7503770c"
 };
 
-// Debug Log for verification
-console.log("Firebase API Key:", firebaseConfig.apiKey);
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
@@ -26,9 +23,11 @@ export const auth = getAuth(app);
 export const provider = new GoogleAuthProvider();
 
 /**
- * Executes a Google Single Sign-On popup.
- * Returns the authenticated user object on success.
+ * Executes a Google Single Sign-On via redirect.
+ * This is more reliable on production domains as it bypasses popup blockers.
  */
 export const signInWithGoogle = () => {
-  return signInWithPopup(auth, provider);
+  return signInWithRedirect(auth, provider);
 };
+
+export { getRedirectResult };

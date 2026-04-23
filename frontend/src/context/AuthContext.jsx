@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
+import { auth, getRedirectResult } from '../firebase';
 
 const AuthContext = createContext();
 
@@ -13,8 +14,26 @@ export const AuthProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Restore user from localStorage on app load
+  // Restore user and handle redirect results
   useEffect(() => {
+    const handleRedirect = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result?.user) {
+          const userData = {
+            email: result.user.email,
+            role: "standard" // Default for SSO
+          };
+          setUser(userData);
+          localStorage.setItem('user', JSON.stringify(userData));
+        }
+      } catch (error) {
+        console.error("Redirect Auth Error:", error);
+      }
+    };
+
+    handleRedirect();
+
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
       try {

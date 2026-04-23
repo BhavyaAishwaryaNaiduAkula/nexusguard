@@ -15,27 +15,11 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
-      const result = await signInWithGoogle();
-      const user = result.user;
-      
-      const userData = {
-        email: user.email,
-        name: user.displayName,
-        photo: user.photoURL,
-        role: "admin" // Granting admin per project requirement
-      };
-
-      // Set user in context and storage
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('nexus_token', user.accessToken);
-
-      toast.success(`Welcome, ${user.displayName}`);
-      navigate('/');
+      // This will navigate away from the current page to Google's login
+      await signInWithGoogle();
     } catch (error) {
       console.error("Google Login Error:", error);
-      toast.error(error.message || "Failed to sign in with Google");
-    } finally {
+      toast.error(error.message || "Failed to initiate Google Sign-In");
       setIsLoading(false);
     }
   };
