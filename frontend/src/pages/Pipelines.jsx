@@ -11,42 +11,54 @@ const Pipelines = () => {
 
   const handleCreatePipeline = (e) => {
     e.preventDefault();
+    console.log("[Pipelines] Intercepted submission for:", pipelineName);
+
     if (!pipelineName.trim()) {
+      console.warn("[Pipelines] Aborting: Empty identifier detected.");
       toast.error('Please enter a pipeline name');
       return;
     }
 
     setIsDeploying(true);
+    console.log("[Pipelines] Synthesis initiated...");
+    
     // Simulate deployment process
     setTimeout(() => {
-      addPipeline(pipelineName);
-      toast.success(`Pipeline "${pipelineName}" successfully initialized!`);
+      console.log("[Pipelines] Manifesting pipeline:", pipelineName);
+      addPipeline({
+        name: pipelineName,
+        type: 'Production',
+        status: 'Healthy',
+        version: 'v1.0.0',
+        time: '0s'
+      });
+      
       setIsDeploying(false);
-      setIsModalOpen(false);
       setPipelineName('');
+      setIsModalOpen(false);
+      console.log("[Pipelines] System stable. Provisioning complete.");
+      
+      toast.success(`${pipelineName} Provisioned Successfully`, {
+        icon: '🚀',
+        style: { background: '#0f172a', color: '#10b981', border: '1px solid #064e3b' }
+      });
     }, 2000);
   };
 
   return (
-    <div className="flex flex-col space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div className="space-y-1">
-          <h2 className="text-2xl sm:text-3xl font-brand font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-brand-200 to-gray-400 uppercase tracking-tighter">
-            CI/CD Pipelines
+          <h2 className="text-3xl font-brand font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-brand-200 to-gray-400 uppercase tracking-tighter">
+            Deployment <span className="text-brand-500">Pipelines</span>
           </h2>
-          <p className="text-slate-400 font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] max-w-lg">
-            Automated deployment workflows & artifact telemetry.
-          </p>
-        </div>
-        <div className="flex items-center gap-3 bg-slate-900/50 px-4 py-2 rounded-xl border border-white/5">
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest font-mono">Runners Active: {14 + (pipelines.length - 3)}</span>
+          <p className="text-slate-400 font-mono text-xs uppercase tracking-[0.2em]">Automated CI/CD Workflows</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Active Pipelines List */}
-        <div className="card p-6 border-brand-500/10 lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Workflows List */}
+        <div className="card p-6 border-brand-500/10 lg:col-span-2 bg-slate-900/20 backdrop-blur">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-white uppercase tracking-tight">Active Workflows</h3>
             <span className="text-[10px] text-brand-400 font-mono font-bold uppercase tracking-widest">{pipelines.length} Systems Running</span>
@@ -63,10 +75,12 @@ const Pipelines = () => {
                   className="flex items-center justify-between p-4 bg-[#020617]/50 rounded-2xl border border-white/5 hover:border-brand-500/30 hover:bg-brand-500/5 transition-all group"
                 >
                   <div className="flex items-center gap-4">
-                    <div className={`w-3 h-3 rounded-full ${p.status === 'Healthy' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'} shadow-[0_0_10px_rgba(99,102,241,0.3)]`}></div>
+                    <div className={`w-3 h-3 rounded-full ${(p.status || 'Healthy') === 'Healthy' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'} shadow-[0_0_10px_rgba(99,102,241,0.3)]`}></div>
                     <div>
-                      <p className="text-sm text-white font-bold group-hover:text-brand-400 transition-colors">{p.name}</p>
-                      <p className="text-[10px] text-slate-500 font-mono uppercase tracking-widest">{p.version} • {p.status.toUpperCase()} • {p.type}</p>
+                      <p className="text-sm text-white font-bold group-hover:text-brand-400 transition-colors">{p.name || 'Unknown'}</p>
+                      <p className="text-[10px] text-slate-500 font-mono uppercase tracking-widest">
+                        {p.version || 'v0.0.0'} • {(p.status || 'Active').toUpperCase()} • {p.type || 'Standard'}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-6">
@@ -75,7 +89,10 @@ const Pipelines = () => {
                       <p className="text-[9px] text-slate-500 uppercase tracking-tighter">Last Run</p>
                     </div>
                     <button 
-                      onClick={() => deletePipeline(p.id)}
+                      onClick={() => {
+                        deletePipeline(p.id);
+                        toast.error(`${p.name} Terminated`);
+                      }}
                       className="p-2 rounded-lg hover:bg-rose-500/10 text-slate-500 hover:text-rose-400 transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -86,12 +103,17 @@ const Pipelines = () => {
                 </motion.div>
               ))}
             </AnimatePresence>
+            {pipelines.length === 0 && (
+              <div className="py-20 text-center">
+                <p className="text-slate-600 font-mono text-[10px] uppercase tracking-widest font-bold">No Active Deployment Pipelines</p>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Create Action Card */}
-        <div className="card p-8 border-brand-500/10 flex flex-col justify-center items-center text-center space-y-6 group hover:border-brand-500/30 transition-all relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        {/* Action Panel */}
+        <div className="card p-8 border-brand-500/10 flex flex-col justify-center items-center text-center space-y-6 group hover:border-brand-500/30 transition-all relative overflow-hidden bg-gradient-to-br from-brand-500/5 to-transparent">
+          <div className="absolute inset-0 bg-white/[0.01] opacity-0 group-hover:opacity-100 transition-opacity"></div>
           
           <motion.div 
             whileHover={{ scale: 1.1, rotate: 90 }}
@@ -116,7 +138,7 @@ const Pipelines = () => {
         </div>
       </div>
 
-      {/* Pipeline Creation Modal */}
+      {/* Creation Modal */}
       <AnimatePresence>
         {isModalOpen && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -136,7 +158,7 @@ const Pipelines = () => {
             >
               <div className="mb-8">
                 <h3 className="text-2xl font-brand font-bold text-white uppercase tracking-tighter">New Pipeline Configuration</h3>
-                <p className="text-slate-400 text-sm mt-1">Define the parameters for your automated deployment.</p>
+                <p className="text-slate-400 text-sm mt-1">Define parameters for your automated deployment.</p>
               </div>
 
               <form onSubmit={handleCreatePipeline} className="space-y-6">
@@ -170,14 +192,14 @@ const Pipelines = () => {
                     type="button"
                     onClick={() => setIsModalOpen(false)}
                     disabled={isDeploying}
-                    className="flex-1 px-6 py-4 rounded-xl border border-white/10 text-slate-400 text-xs font-bold uppercase tracking-widest hover:bg-white/5 transition-all disabled:opacity-50"
+                    className="flex-1 px-6 py-4 rounded-xl border border-white/10 text-slate-400 text-xs font-bold uppercase tracking-widest hover:bg-white/5 transition-all"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isDeploying}
-                    className="flex-[2] btn-primary py-4 text-xs font-bold uppercase tracking-widest shadow-lg shadow-brand-500/20 disabled:opacity-50 flex items-center justify-center gap-3"
+                    className="flex-[2] btn-primary py-4 text-xs font-bold uppercase tracking-widest shadow-lg shadow-brand-500/20 flex items-center justify-center gap-3"
                   >
                     {isDeploying ? (
                       <>

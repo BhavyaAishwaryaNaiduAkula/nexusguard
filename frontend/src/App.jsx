@@ -216,7 +216,7 @@ function AppContent() {
               <Route path="/pipelines" element={<ProtectedRoute><PageTransition><Pipelines /></PageTransition></ProtectedRoute>} />
               <Route path="/clusters" element={<ProtectedRoute><PageTransition><Clusters /></PageTransition></ProtectedRoute>} />
               <Route path="/observability" element={<ProtectedRoute><PageTransition><Observability /></PageTransition></ProtectedRoute>} />
-              <Route path="/access-control" element={<ProtectedRoute requiredRole="admin"><PageTransition><AccessControl /></PageTransition></ProtectedRoute>} />
+              <Route path="/access-control" element={<ProtectedRoute><PageTransition><AccessControl /></PageTransition></ProtectedRoute>} />
             </Routes>
           </Suspense>
         </AnimatePresence>

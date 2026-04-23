@@ -11,14 +11,18 @@ export const WorkflowProvider = ({ children }) => {
     { id: 'p3', name: 'data-mesh-sync', status: 'Warning', version: 'v1.0.4', time: '12m 45s', type: 'Internal' }
   ]);
 
-  const addPipeline = (name) => {
+  const addPipeline = (pipelineData) => {
+    const isObj = pipelineData && typeof pipelineData === 'object';
+    const name = isObj ? pipelineData.name : pipelineData;
+    const type = isObj ? pipelineData.type : 'On-Demand';
+    
     const newPipeline = {
       id: `p${Date.now()}`,
-      name: name,
+      name: name || 'Unnamed Pipeline',
       status: 'Healthy',
       version: 'v1.0.0',
       time: 'Just now',
-      type: 'On-Demand'
+      type: type
     };
     setPipelines(prev => [newPipeline, ...prev]);
   };
