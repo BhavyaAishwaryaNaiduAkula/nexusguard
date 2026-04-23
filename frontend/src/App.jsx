@@ -212,11 +212,11 @@ function AppContent() {
             <Routes location={location} key={location.pathname}>
               <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
               <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
-              <Route path="/" element={<ProtectedRoute><PageTransition><MainDashboard {...dashboardProps} /></PageTransition></ProtectedRoute>} />
-              <Route path="/pipelines" element={<ProtectedRoute><PageTransition><Pipelines /></PageTransition></ProtectedRoute>} />
-              <Route path="/clusters" element={<ProtectedRoute><PageTransition><Clusters /></PageTransition></ProtectedRoute>} />
-              <Route path="/observability" element={<ProtectedRoute><PageTransition><Observability /></PageTransition></ProtectedRoute>} />
-              <Route path="/access-control" element={<ProtectedRoute><PageTransition><AccessControl /></PageTransition></ProtectedRoute>} />
+              <Route path="/" element={<PageTransition><MainDashboard {...dashboardProps} /></PageTransition>} />
+              <Route path="/pipelines" element={<PageTransition><Pipelines /></PageTransition>} />
+              <Route path="/clusters" element={<PageTransition><Clusters /></PageTransition>} />
+              <Route path="/observability" element={<PageTransition><Observability /></PageTransition>} />
+              <Route path="/access-control" element={<PageTransition><AccessControl /></PageTransition>} />
             </Routes>
           </Suspense>
         </AnimatePresence>
